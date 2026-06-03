@@ -5,9 +5,8 @@ Which ones comply with EU's [AI Act Article 53(1)(d)](https://ai-act-service-des
 
 This visualisation project builds on [this knowledge graph](https://public-ai-data-sources.wikibase.cloud/) of public AI metadata to respond to these questions at a glance. Public datasets on the left are linked to the AI models that use them on the right.
 
-<iframe src="https://mrmvn.github.io/public-ai-data-viz/"
-        width="100%" height="640" style="border:0" loading="lazy"
-        title="Public AI Data Sources Viz"></iframe>
+[![Visualization preview](screenshot.png)](https://mrmvn.github.io/public-ai-data-viz/)
+
 
 If anything seems missing or incorrect, please feel free to directly update the data on the wikibase directly, or to submit an issue in this repo.
 
