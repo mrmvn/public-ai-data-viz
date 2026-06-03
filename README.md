@@ -8,7 +8,7 @@ This visualisation project builds on [this knowledge graph](https://public-ai-da
 [![Visualization preview](screenshot.png)](https://mrmvn.github.io/public-ai-data-viz/)
 
 
-If anything seems missing or incorrect, please feel free to directly update the data on the wikibase directly, or to submit an issue in this repo.
+If anything seems missing or incorrect, please feel free to directly update the data on the wikibase directly, or to submit an issue [here](https://github.com/mrmvn/public-ai-data-viz/issues/new).
 
 [This codebase](https://github.com/mrmvn/public-ai-data-viz) is licensed under [AGPL 3.0](LICENSE).
 Data from this [wikibase](https://public-ai-data-sources.wikibase.cloud/) is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).<br>
