@@ -46,11 +46,13 @@ TEMPLATE = string.Template("""<!DOCTYPE html>
   .ln  { display: inline-block; width: 18px; height: 0; border-top: 3px solid;
          margin-right: 6px; vertical-align: middle; }
   .muted { color: #888; }
+  #license { position: absolute; bottom: 8px; right: 12px; z-index: 10; font-size: 11px; color: #888; }
+  #license a { color: #888; }
 </style>
 </head>
 <body>
 <div id="panel">
-  <h1>Models &amp; their training datasets</h1>
+  <h1><a href="https://mrmvn.github.io/public-ai-data-viz/">AI models &amp; public training data</a></h1>
   <div id="stats"></div>
   <fieldset id="filter">
     <label><input type="radio" name="filter" value="gpai" checked>with a GPAI notice</label>
@@ -75,6 +77,7 @@ TEMPLATE = string.Template("""<!DOCTYPE html>
     zoom &middot; click a node to open it</div>
 </div>
 <div id="net"></div>
+<div id="license"><a href="https://public-ai-data-sources.wikibase.cloud/" target="_blank">data</a> under <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">CC0</a> &middot; <a href="https://github.com/mrmvn/public-ai-data-viz" target="_blank">code</a> under <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank">AGPL 3.0</a></div>
 <script>
 const GRAPH = $graph;
 const MODELS_WITH_SOURCES = new Set(GRAPH.edges.map(e => e.model));   // disclosed >=1 dataset
