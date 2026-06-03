@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pull the model<->dataset `trained on` graph from the Wikibase and write site/graph.json.
+"""Pull the model<->dataset `trained on` graph from the Wikibase and write graph.json.
 
 Self-contained: the only runtime dependency is `requests`. The Wikibase property/class ids
 for this instance are held in the IDS map below. Read-only SPARQL against the public instance.
@@ -14,7 +14,7 @@ import json
 import requests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SITE = os.path.join(HERE, "site")
+SITE = HERE
 
 BASE = "https://public-ai-data-sources.wikibase.cloud"
 SPARQL = BASE + "/query/sparql"
@@ -146,7 +146,6 @@ def main():
              "datasets": list(datasets.values()),
              "edges": edges}
 
-    os.makedirs(SITE, exist_ok=True)
     with open(os.path.join(SITE, "graph.json"), "w") as f:
         json.dump(graph, f, indent=2, ensure_ascii=False)
 

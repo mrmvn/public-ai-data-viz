@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render site/graph.json into a self-contained site/index.html (vis-network from CDN).
+"""Render graph.json into a self-contained index.html (vis-network from CDN).
 
 Bipartite layout: datasets pinned to the left column, models to the right column, edges =
 `trained on`. Deterministic vertical spacing (no node overlap), hover-to-highlight a node's
@@ -18,7 +18,7 @@ import json
 import string
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SITE = os.path.join(HERE, "site")
+SITE = HERE
 
 TEMPLATE = string.Template("""<!DOCTYPE html>
 <html lang="en">
