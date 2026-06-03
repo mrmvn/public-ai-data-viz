@@ -31,16 +31,31 @@ TEMPLATE = string.Template("""<!DOCTYPE html>
   html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
   #net { width: 100%; height: 100vh; background: #fafafa; }
   #panel {
-    position: absolute; top: 12px; left: 12px; z-index: 10;
+    position: absolute; top: 12px; right: 12px; z-index: 10;
     background: #fff; border: 1px solid #ddd;
     border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.6;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08); max-width: 260px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); max-width: 250px;
   }
-  #panel h1 { font-size: 14px; margin: 0 0 6px; }
-  #stats { color: #444; margin: 6px 0; font-variant-numeric: tabular-nums; }
+  #panel h1 { font-size: 14px; margin: 0 0 4px; display: flex; align-items: center; gap: 4px; }
+  #panel h1 a { flex: 1; color: inherit; text-decoration: none; }
+  #panel h1 a:hover { text-decoration: underline; }
+  #shareBtn {
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-size: 13px; color: #333; line-height: 1; flex-shrink: 0; opacity: 0.5;
+  }
+  #shareBtn:hover { opacity: 1; }
+  #shareToast { font-size: 11px; color: #222; white-space: nowrap; }
+  #stats { color: #444; margin: 4px 0; font-variant-numeric: tabular-nums; }
   #filter { margin: 4px 0 2px; padding: 0; border: 0; }
   #filter label { display: block; cursor: pointer; }
   #filter input { margin-right: 6px; vertical-align: middle; cursor: pointer; }
+  #legend-detail {
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+  }
+  #panel:hover #legend-detail { max-height: 320px; opacity: 1; }
+  #legend-hint { font-size: 11px; color: #bbb; margin-top: 2px; }
+  #panel:hover #legend-hint { display: none; }
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
          margin-right: 6px; vertical-align: middle; }
   .ln  { display: inline-block; width: 18px; height: 0; border-top: 3px solid;
@@ -52,29 +67,34 @@ TEMPLATE = string.Template("""<!DOCTYPE html>
 </head>
 <body>
 <div id="panel">
-  <h1><a href="https://mrmvn.github.io/public-ai-data-viz/">AI models &amp; public training data</a></h1>
+  <h1>
+    <a href="https://mrmvn.github.io/public-ai-data-viz/">AI models &amp; public training data</a>
+    <button id="shareBtn" title="Copy link">🔗</button><span id="shareToast" style="display:none">Copied!</span>
+  </h1>
   <div id="stats"></div>
   <fieldset id="filter">
     <label><input type="radio" name="filter" value="gpai" checked>with a GPAI notice</label>
     <label><input type="radio" name="filter" value="sources">with public data sources</label>
   </fieldset>
-  <label style="display:block;margin-top:6px;cursor:pointer">
-    <input type="checkbox" id="timeaxis" style="margin-right:6px;vertical-align:middle;cursor:pointer">time axis (by publication date)</label>
-  <div style="margin-top:8px">
-    <div><span class="dot" style="background:#e8923a"></span>dataset (left)</div>
-    <div><span class="dot" style="background:#3a72e8"></span>model (right)</div>
-    <div><span style="display:inline-block;width:9px;height:9px;background:#3a72e8;border:2px solid #e02424;margin-right:5px;vertical-align:middle"></span>no disclosed public data sources</div>
-    <div><span class="ln" style="border-color:#4caf50"></span>pre-training</div>
-    <div><span class="ln" style="border-color:#9c27b0"></span>post-training</div>
-    <div><span class="ln" style="border-color:#bbbbbb"></span>stage unspecified</div>
-    <div><span class="ln" style="border-color:#777; border-top-style:dashed"></span>based on (lineage)</div>
+  <label style="display:block;margin-top:4px;cursor:pointer">
+    <input type="checkbox" id="timeaxis" style="margin-right:6px;vertical-align:middle;cursor:pointer">time axis</label>
+  <div id="legend-detail">
+    <div style="margin-top:8px">
+      <div><span class="dot" style="background:#e8923a"></span>dataset (left)</div>
+      <div><span class="dot" style="background:#3a72e8"></span>model (right)</div>
+      <div><span style="display:inline-block;width:9px;height:9px;background:#3a72e8;border:2px solid #e02424;margin-right:5px;vertical-align:middle"></span>no disclosed public data sources</div>
+      <div><span class="ln" style="border-color:#4caf50"></span>pre-training</div>
+      <div><span class="ln" style="border-color:#9c27b0"></span>post-training</div>
+      <div><span class="ln" style="border-color:#bbbbbb"></span>stage unspecified</div>
+      <div><span class="ln" style="border-color:#777; border-top-style:dashed"></span>based on (lineage)</div>
+    </div>
+    <div id="axislegend" style="display:none; margin-top:6px; border-top:1px solid #eee; padding-top:6px">
+      <div><b>right axis</b>: publication date (older top &rarr; newer bottom)</div>
+      <div><span class="ln" style="border-color:#e02424; border-top-style:dashed"></span>EU AI Act / GPAI milestone dates</div>
+    </div>
+    <div class="muted" style="margin-top:6px">hover to focus &middot; drag &middot; scroll to zoom &middot; click a node to open it</div>
   </div>
-  <div id="axislegend" style="display:none; margin-top:6px; border-top:1px solid #eee; padding-top:6px">
-    <div><b>right axis</b>: model publication date (older top &rarr; newer bottom)</div>
-    <div><span class="ln" style="border-color:#e02424; border-top-style:dashed"></span>EU AI Act / GPAI milestone dates</div>
-  </div>
-  <div class="muted" style="margin-top:6px">hover to focus &middot; drag &middot; scroll to
-    zoom &middot; click a node to open it</div>
+  <div id="legend-hint" class="muted">ⓘ hover for legend &amp; tips</div>
 </div>
 <div id="net"></div>
 <div id="license"><a href="https://public-ai-data-sources.wikibase.cloud/" target="_blank">data</a> under <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">CC0</a> &middot; <a href="https://github.com/mrmvn/public-ai-data-viz" target="_blank">code</a> under <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank">AGPL 3.0</a></div>
@@ -82,12 +102,12 @@ TEMPLATE = string.Template("""<!DOCTYPE html>
 const GRAPH = $graph;
 const MODELS_WITH_SOURCES = new Set(GRAPH.edges.map(e => e.model));   // disclosed >=1 dataset
 
-const STEP = 38;                       // vertical px between nodes in a column (no overlap)
+const STEP = 42;                       // vertical px between nodes in a column (no overlap)
 const COL_X = 620;                     // half the column separation
 const INDENT = 60;                     // derived datasets nudged toward centre, under source
 const COL_DATASET = "#e8923a", COL_MODEL = "#3a72e8";
 const EDGE_COLOR = { "pre-training": "#4caf50", "post-training": "#9c27b0" };
-const DEFAULT_EDGE = "#cccccc", BASED_EDGE = "#777777";
+const DEFAULT_EDGE = "#aaaaaa", BASED_EDGE = "#777777";
 const FADE_NODE = "#e6e6e6", FADE_EDGE = "#ececec";
 const AXIS_GAP = 200;                  // px from model column to the time axis
 // EU AI Act / GPAI milestones drawn as horizontal reference lines on the time axis
@@ -133,7 +153,7 @@ function build(mode) {
   edges.forEach(e => { deg[e.model] = (deg[e.model]||0)+1; deg[e.dataset] = (deg[e.dataset]||0)+1; });
   // degree drives label font size (more connections = visually heavier), capped to keep
   // box height predictable so the fixed STEP never overlaps.
-  const fsize = id => Math.min(20, 12 + 2 * Math.sqrt(deg[id] || 0));
+  const fsize = id => Math.min(20, 13 + 2 * Math.sqrt(deg[id] || 0));
 
   const dsUsed = new Set(edges.map(e => e.dataset));
   const datasets = GRAPH.datasets.filter(d => dsUsed.has(d.id));   // only family roots survive
@@ -195,6 +215,7 @@ function build(mode) {
              (mem.length > 1 ? " — merges " + mem.length + " editions: " + mem.join(", ") : ""),
       url: d.url, x: -COL_X + depth(d.id) * INDENT, y: ypos(i, datasets.length), fixed: true,
       shape: "box", color: { background: COL_DATASET, border: "#c9742a" },
+      borderWidth: 1, margin: 8,
       font: { color: "#1a1a1a", size: fsize(d.id) }
     });
   });
@@ -209,7 +230,8 @@ function build(mode) {
       url: m.url, x: COL_X, y: modelY[m.id], fixed: true,
       shape: "box",
       color: { background: COL_MODEL, border: noSrc ? "#e02424" : (m.gpai ? "#1a3c8a" : "#2a55b0") },
-      borderWidth: (noSrc || m.gpai) ? 4 : 1, borderWidthSelected: 4,
+      borderWidth: (noSrc || m.gpai) ? 2 : 1, borderWidthSelected: 4,
+      margin: 8,
       font: { color: "#ffffff", size: fsize(m.id) }
     });
   });
@@ -222,7 +244,7 @@ function build(mode) {
   // trained-on edges (dataset family -> model)
   const visEdges = edges.map((e, i) => ({
     id: "t" + i, from: e.dataset, to: e.model,
-    color: { color: EDGE_COLOR[e.stage] || DEFAULT_EDGE, opacity: 0.55 }, width: 1,
+    color: { color: EDGE_COLOR[e.stage] || DEFAULT_EDGE, opacity: 0.65 }, width: 1.5,
     smooth: { type: "cubicBezier", forceDirection: "horizontal", roundness: 0.4 }
   }));
 
@@ -253,8 +275,9 @@ function build(mode) {
   edgesDS.clear(); edgesDS.add(visEdges);
 
   document.getElementById("stats").innerHTML =
-    "<b>" + models.length + "</b> models &middot; <b>" + datasets.length +
-    "</b> datasets &middot; <b>" + edges.length + "</b> trained-on links";
+    "<b style='color:" + COL_DATASET + "'>" + datasets.length + "</b> datasets &middot; " +
+    "<b style='color:" + COL_MODEL + "'>" + models.length + "</b> models &middot; " +
+    "<b>" + edges.length + "</b> links";
 }
 
 function highlight(id) {
@@ -263,8 +286,8 @@ function highlight(id) {
           color: (n.id === id || keepN.has(n.id)) ? nodeBase[n.id] : FADE_NODE }));
   const eUpd = edgesDS.map(e => {
     const on = keepN.has("e" + e.id);
-    return { id: e.id, color: { color: on ? edgeBase[e.id].color : FADE_EDGE, opacity: on ? 0.9 : 0.25 },
-             width: on ? 2.5 : 1 };
+    return { id: e.id, color: { color: on ? edgeBase[e.id].color : FADE_EDGE, opacity: on ? 0.9 : 0.2 },
+             width: on ? 3 : 1.5 };
   });
   nodesDS.update(nUpd); edgesDS.update(eUpd);
 }
@@ -272,8 +295,16 @@ function highlight(id) {
 function clearHighlight() {
   nodesDS.update(nodesDS.map(n => ({ id: n.id, color: nodeBase[n.id] })));
   edgesDS.update(edgesDS.map(e => ({ id: e.id,
-    color: { color: edgeBase[e.id].color, opacity: 0.55 }, width: edgeBase[e.id].width })));
+    color: { color: edgeBase[e.id].color, opacity: 0.65 }, width: edgeBase[e.id].width })));
 }
+
+document.getElementById("shareBtn").addEventListener("click", () => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const t = document.getElementById("shareToast");
+    t.style.display = "inline";
+    setTimeout(() => t.style.display = "none", 2000);
+  });
+});
 
 build("gpai");
 
