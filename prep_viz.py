@@ -103,6 +103,7 @@ const GRAPH = $graph;
 const MODELS_WITH_SOURCES = new Set(GRAPH.edges.map(e => e.model));   // disclosed >=1 dataset
 
 const STEP = 42;                       // vertical px between nodes in a column (no overlap)
+const MODEL_STEP = 65;                 // wider gap for the sparser model column
 const COL_X = 620;                     // half the column separation
 const INDENT = 60;                     // derived datasets nudged toward centre, under source
 const COL_DATASET = "#e8923a", COL_MODEL = "#3a72e8";
@@ -187,11 +188,11 @@ function build(mode) {
     const times = dated.map(T);
     const minT = times.length ? Math.min(...times) : 0;
     const maxT = times.length ? Math.max(...times) : 1;
-    const half = Math.max(datasets.length, models.length * 1.6, 10) * STEP / 2;
+    const half = Math.max(datasets.length * STEP, models.length * MODEL_STEP * 1.6, 10 * STEP) / 2;
     yTop = -half; yBottom = half;
     const scaleY = t => (maxT === minT) ? 0 : yTop + (t - minT) / (maxT - minT) * (yBottom - yTop);
     // place in date order, nudging apart so clustered releases don't overlap
-    let prevY = -Infinity; const MINGAP = STEP * 0.92;
+    let prevY = -Infinity; const MINGAP = MODEL_STEP * 0.92;
     dated.slice().sort((a,b) => T(a) - T(b)).forEach(m => {
       let y = scaleY(T(m));
       if (y < prevY + MINGAP) y = prevY + MINGAP;
@@ -202,7 +203,7 @@ function build(mode) {
     AXIS = { minT, maxT, yTop, yBottom, axisX, xLeft: COL_X - AXIS_GAP };
   } else {
     models.sort((a,b) => (deg[b.id]||0) - (deg[a.id]||0));
-    models.forEach((m,i) => modelY[m.id] = ypos(i, models.length));
+    models.forEach((m,i) => modelY[m.id] = (i - (models.length - 1) / 2) * MODEL_STEP);
     AXIS = null;
   }
 
@@ -231,8 +232,8 @@ function build(mode) {
       shape: "box",
       color: { background: COL_MODEL, border: noSrc ? "#e02424" : (m.gpai ? "#1a3c8a" : "#2a55b0") },
       borderWidth: (noSrc || m.gpai) ? 2 : 1, borderWidthSelected: 4,
-      margin: 8,
-      font: { color: "#ffffff", size: fsize(m.id) }
+      margin: 10,
+      font: { color: "#ffffff", size: Math.max(fsize(m.id), 30) }
     });
   });
   // invisible spacers so network.fit() keeps the axis + labels in view
